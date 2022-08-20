@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class Loginpage extends StatefulWidget {
-  const Loginpage({Key? key}) : super(key: key);
+class RegisterView extends StatefulWidget {
+  const RegisterView({Key? key}) : super(key: key);
 
   @override
-  State<Loginpage> createState() => _LoginpageState();
+  State<RegisterView> createState() => _RegisterViewState();
 }
 
-class _LoginpageState extends State<Loginpage> {
+class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   @override
@@ -45,15 +45,13 @@ class _LoginpageState extends State<Loginpage> {
               final email = _email;
               final password = _password;
               final userCredentials =
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
                 email: email.text,
                 password: password.text,
               );
               print(userCredentials);
-              // Navigator.pushAndRemoveUntil(
-              //     context, '/notes/', (route) => false);
             },
-            child: const Text("Login"),
+            child: const Text("Register"),
           ),
         ],
       ),
