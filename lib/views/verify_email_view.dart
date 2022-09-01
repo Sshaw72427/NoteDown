@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:notedown/services/auth/auth_service.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({Key? key}) : super(key: key);
@@ -14,11 +14,13 @@ class _VerifyEmailState extends State<VerifyEmail> {
     return Scaffold(
       body: Column(
         children: [
-          const Text('Too verify Your email tap the below button'),
+          const Text(
+              "We've sent you email verificatoon link. please open it to verify your account"),
+          const Text(
+              "If you haven't got the verification link yet, press the button below"),
           TextButton(
             onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              await user?.sendEmailVerification();
+              AuthService.firebase().sendEmailVerification();
             },
             child: const Text('Send Verification Link'),
           ),
@@ -28,6 +30,14 @@ class _VerifyEmailState extends State<VerifyEmail> {
                   context, '/login/', (route) => false);
             },
             child: const Text('go to Login page'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await AuthService.firebase().logout();
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/register/', (route) => false);
+            },
+            child: const Text('Restart'),
           ),
         ],
       ),

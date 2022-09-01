@@ -1,5 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:notedown/services/auth/auth_exceptions.dart';
+import 'package:notedown/services/auth/auth_service.dart';
+import 'package:notedown/utilities/show_error_dialog.dart';
 
 class Loginpage extends StatefulWidget {
   const Loginpage({Key? key}) : super(key: key);
@@ -44,16 +46,48 @@ class _LoginpageState extends State<Loginpage> {
             onPressed: () async {
               final email = _email;
               final password = _password;
-              final userCredentials =
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
-                email: email.text,
-                password: password.text,
-              );
-              print(userCredentials);
-              // Navigator.pushAndRemoveUntil(
-              //     context, '/notes/', (route) => false);
+              try {
+                await AuthService.firebase().logIn(
+                  email: email.text,
+                  password: password.text,
+                );
+                final user = AuthService.firebase().currentUser;
+                if (user?.isEmailVerified ?? false) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/notes/',
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/verifyEmail/',
+                    (route) => false,
+                  );
+                }
+              } on UserNotFoundAuthException {
+                await showErrorDialog(
+                  context,
+                  'user not found',
+                );
+              } on WrongPasswordAuthException {
+                await showErrorDialog(
+                  context,
+                  'wrong-password',
+                );
+              } on GenericAuthException {
+                await showErrorDialog(
+                  context,
+                  'Authentication error',
+                );
+              }
             },
             child: const Text("Login"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/register/', (route) => false);
+            },
+            child: const Text('Not registered yet? Register here'),
           ),
         ],
       ),
